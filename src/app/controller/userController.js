@@ -14,6 +14,7 @@ class UserController {
     const createUser = async () => {
       const response = await User.create({
         user_name: "SUSY",
+        password: "124",
       });
       res.json({ data: response });
     };
@@ -23,9 +24,7 @@ class UserController {
 
   deleteUser(req, res) {
     const deleteUser = async () => {
-      const response = await User.deleteMany({
-        user_name: "Duy",
-      });
+      const response = await User.deleteMany({});
 
       res.json({ message: "Xóa con mẹ nó hết rồi", data: response });
     };
