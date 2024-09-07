@@ -1,15 +1,12 @@
 const express = require("express");
 const app = express();
-const port = 3000;
-const db = require("../config/db");
+const port = process.env.port || 5000;
+const db = require("../src/config/db");
 const cors = require("cors");
-const route = require("../routes");
+const route = require("../src/routes");
 
 // Connect to database
 db.connect();
-
-// CORS
-app.use(cors());
 
 // ĐỊNH DẠNG DỮ LIỆU
 app.use(express.urlencoded({ extended: true }));
