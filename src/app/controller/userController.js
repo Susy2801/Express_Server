@@ -12,9 +12,11 @@ class UserController {
 
   createUser(req, res) {
     const createUser = async () => {
+      const { user_name, password, name } = req.body;
       const response = await User.create({
-        user_name: "SUSY",
-        password: "124",
+        user_name: user_name,
+        password: password,
+        name: name,
       });
       res.json({ data: response });
     };
@@ -40,6 +42,30 @@ class UserController {
       res.json({ response });
     };
     updateUser();
+  }
+
+  loginUser(req, res) {
+    const loginUser = async () => {
+      const { user_name, password } = req.body;
+      const response = await User.find({
+        user_name: user_name,
+        password: password,
+      });
+      if (response.length <= 0) {
+        res.send({
+          message: "No user found",
+          isSuccess: false,
+        });
+      } else {
+        res.json({
+          message: "OKLA",
+          data: response,
+          isSuccess: true,
+        });
+      }
+    };
+
+    loginUser();
   }
 }
 

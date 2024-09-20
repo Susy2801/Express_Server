@@ -7,6 +7,7 @@ const route = require("../src/routes");
 
 // Connect to database
 db.connect();
+app.use(cors());
 
 // ĐỊNH DẠNG DỮ LIỆU
 app.use(express.urlencoded({ extended: true }));
