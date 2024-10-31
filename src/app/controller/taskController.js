@@ -1,4 +1,5 @@
 const Task = require("../models/Task");
+const mongoose = require("mongoose");
 
 class TaskController {
   async create(req, res) {
@@ -22,8 +23,9 @@ class TaskController {
   }
 
   async get(req, res) {
+    const { author } = req.query;
     try {
-      const data = await Task.find({});
+      const data = await Task.find({ author: author }).populate("author");
       res.json({
         message: "Success",
         data: data,

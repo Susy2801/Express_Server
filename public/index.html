@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real-time Chat</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- Tải thư viện Socket.IO từ server -->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+
+      #chat-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      #messages {
+        border: 1px solid #ddd;
+        padding: 10px;
+        height: 300px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        background-color: #fafafa;
+      }
+
+      #messageInput {
+        width: 80%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      #sendMessage {
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      #sendMessage:hover {
+        background-color: #218838;
+      }
+
+      #userInfo {
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chat-container">
+      <h1>Chat with User</h1>
+
+      <div id="userInfo">
+        <strong>User ID:</strong> <span id="currentUserId"></span><br />
+        <strong>Chatting with:</strong> <span id="otherUserId"></span>
+      </div>
+
+      <div id="messages"></div>
+
+      <input id="messageInput" placeholder="Type your message..." />
+      <button id="sendMessage">Send</button>
+    </div>
+
+    <script>
+      // Kết nối tới server Socket.IO
+      const socket = io("http://localhost:5000");
+
+      // Thông tin về user hiện tại và người dùng đang chat cùng
+      const currentUserId = "user1"; // Thay đổi theo user đăng nhập hiện tại
+      const otherUserId = "user2"; // Thay đổi theo người dùng mà bạn đang chat cùng
+
+      // Hiển thị thông tin người dùng
+      document.getElementById("currentUserId").textContent = currentUserId;
+      document.getElementById("otherUserId").textContent = otherUserId;
+
+      // Tham gia phòng chat (room) giữa currentUserId và otherUserId
+      socket.emit("join", { userId: currentUserId, otherUserId });
+
+      // Lắng nghe sự kiện nhận tin nhắn từ server
+      socket.on("chat:message", (data) => {
+        const messagesDiv = document.getElementById("messages");
+        const messageElement = document.createElement("p");
+        messageElement.textContent = `${data.sender}: ${
+          data.message
+        } (${new Date(data.timestamp).toLocaleTimeString()})`;
+        messagesDiv.appendChild(messageElement);
+
+        // Cuộn xuống cuối cùng của khung chat
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      });
+
+      // Khi nhấn vào nút gửi tin nhắn
+      document.getElementById("sendMessage").onclick = function () {
+        const message = document.getElementById("messageInput").value;
+
+        // Kiểm tra xem người dùng có nhập tin nhắn không
+        if (message.trim()) {
+          // Gửi tin nhắn lên server
+          socket.emit("chat:message", {
+            sender: currentUserId,
+            receiver: otherUserId,
+            message,
+          });
+
+          // Xóa nội dung input sau khi gửi
+          document.getElementById("messageInput").value = "";
+        }
+      };
+    </script>
+  </body>
+</html>
